@@ -34,7 +34,10 @@ use App\Mail\WeMissYou;
 */
 
 Route::get('/', function () {
-    return redirect()->route('dashboard.home.index');
+    if (Auth::check()) {
+        return redirect()->route('dashboard.home.index');
+    }
+    return view('landingpage.inicio');
 });
 
 Route::prefix('dashboard')->middleware('auth')->name('dashboard.')->group(function () {
@@ -82,3 +85,13 @@ Route::prefix('dashboard')->middleware('auth')->name('dashboard.')->group(functi
 });
 
 Auth::routes(['register' => false]);
+
+Route::get('/{pagina?}', function ($pagina = 'inicio') {
+    $permitidas = ['inicio', 'contactanos', 'sobre-nosotros', 'funcionalidades'];
+
+    if (!in_array($pagina, $permitidas)) {
+        abort(404);
+    }
+
+    return view("landingpage.$pagina");
+});
